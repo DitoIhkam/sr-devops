@@ -1,13 +1,3 @@
-
-Baik, berikut terlampir untuk testnya. Deadline waktu 5 hari setelah pengiriman test. Apabila sudah kirim test mohon konfirmasi dan kirimkan link Github ke saya by WA atau email: widdy@redikru.com. Terima kasih🙏🏻
-
-
-https://bit.ly/SrDevOpsTest 
-
-
-jenkins diilangin
-
-
 # Question 1: Infrastructure as Code with Terraform
 Objective: Set up a basic infrastructure using Terraform.
 
