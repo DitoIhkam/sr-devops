@@ -3,16 +3,6 @@
 # Question 3: Monitoring and Logging with Prometheus and Grafana
 Objective: Set up monitoring and logging for a simple Dockerized web application.
 
-
-![alt text](?raw=true)
-Create a simple web application (e.g., a Python Flask app) and containerize it using Docker.
-Set up Prometheus to monitor the application’s metrics (CPU, memory usage, request counts).
-Set up Grafana to visualize these metrics.
-Configure basic alerting rules in Prometheus.
-
-kasihtau kalo ini pake ansible buat docker in nya
-
-
 # Install Monitoring app
 
 ## Server configuration using ansbile
@@ -26,7 +16,7 @@ Saya akan melakukan installasi dan menjalankan beberapa kebutuhan software/aplik
 * Grafana (Server Monitoring)
 * Prometheus (Server Monitoring)
 
-saya menginstall docker di semua server karna pada akhirnya nanti aplikasi akan berjalan on top docker
+saya menginstall docker di semua server karna pada akhirnya nanti aplikasi akan berjalan on top docker, dan saya menginstall nya menggunakan otomatisasi ansible.
 
 khusus dibagian prometheus harus kita buat konfigurasinya sebelum menjalankan dan menginstall software/aplikasi tersebut dengan file 'prometheus.yml'
 
