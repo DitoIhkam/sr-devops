@@ -146,8 +146,12 @@ lalu setelah kode dibuat, jalankan perintah terraform di masing2 folder dengan p
 4. Terraform apply (untuk menjalankan terraform)
 
 
-(gambar terraform init, validate, plan, dan apply)
+![alt text](https://github.com/DitoIhkam/sr-devops/blob/main/1%3A%20Infrastructure%20as%20Code%20with%20Terraform/img/1.%20Terraform%20init%2C%20validate%2C%20plan.png?raw=true)
+![alt text](https://github.com/DitoIhkam/sr-devops/blob/main/1%3A%20Infrastructure%20as%20Code%20with%20Terraform/img/2.%20Terraform%20apply.png?raw=true)
 
+
+hasil dari vm yang dibuat menggunakan terraform
+![alt text](https://github.com/DitoIhkam/sr-devops/blob/main/1%3A%20Infrastructure%20as%20Code%20with%20Terraform/img/all%20vm.png?raw=true)
 
 ## NGINX Installation
 
@@ -157,10 +161,10 @@ Setelah server tersedia, yang pertama saya sediakan disini yaitu menginstall NGI
 * Reverse Proxy
 ```
 server {
-    server_name ditoihkamp.studentdumbways.my.id;
+    server_name ditoihkamf.studentdumbways.my.id;
 
     location / {
-        proxy_pass http://27.112.78.5:3000;
+        proxy_pass http://103.186.1.45:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -169,10 +173,10 @@ server {
 }
 
 server {
-    server_name api.ditoihkamp.studentdumbways.my.id;
+    server_name api.ditoihkamf.studentdumbways.my.id;
 
     location / {
-        proxy_pass http://27.112.78.5:5000;
+        proxy_pass http://103.186.1.45:5000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -181,10 +185,10 @@ server {
 }
 
 server {
-    server_name node-appserver.ditoihkamp.studentdumbways.my.id;
+    server_name nodeapp.ditoihkamf.studentdumbways.my.id;
 
     location / {
-        proxy_pass http://27.112.78.5:9100;
+        proxy_pass http://103.186.1.45:9100;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -193,10 +197,10 @@ server {
 }
 
 server {
-    server_name node-gateway.ditoihkamp.studentdumbways.my.id;
+    server_name nodegat.ditoihkamf.studentdumbways.my.id;
 
     location / {
-        proxy_pass http://103.226.139.168:9100;
+        proxy_pass http://103.59.95.235:9100;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -205,10 +209,23 @@ server {
 }
 
 server {
-    server_name node-monit.ditoihkamp.studentdumbways.my.id;
+    server_name nodemonit.ditoihkamf.studentdumbways.my.id;
 
     location / {
-        proxy_pass http://103.176.79.201:9100;
+        proxy_pass http://103.76.120.80:9100;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+
+server {
+    server_name graf.ditoihkamf.studentdumbways.my.id;
+
+    location / {
+        proxy_pass http://103.76.120.80:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -217,10 +234,10 @@ server {
 }
 
 server {
-    server_name jenkins.ditoihkamp.studentdumbways.my.id;
+    server_name prom.ditoihkamf.studentdumbways.my.id;
 
     location / {
-        proxy_pass http://103.176.79.201:8080;
+        proxy_pass http://103.76.120.80:9090;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -228,40 +245,18 @@ server {
     }
 }
 
-server {
-    server_name graf.ditoihkamp.studentdumbways.my.id;
-
-    location / {
-        proxy_pass http://103.176.79.201:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-
-server {
-    server_name prom.ditoihkamp.studentdumbways.my.id;
-
-    location / {
-        proxy_pass http://103.176.79.201:9090;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-
-# appserver 27.112.78.5
-# gateway 103.226.139.168
-# monitoring 103.176.79.201
+# appserver 103.186.1.45
+# gateway 103.59.95.235
+# monitoring 103.76.120.80
 ```
 
 Juga untuk ansible playbook disini script untuk penginstallan nginx dan copy paste reverse proxy ke vm gateway
 
 ```
-- hosts: gateway
-  become: true
+---
+- become: true
+  gather_facts: false
+  hosts: gateway
   tasks:
     - name: Installing nginx
       apt:
@@ -274,25 +269,32 @@ Juga untuk ansible playbook disini script untuk penginstallan nginx dan copy pas
         name: nginx
         state: started
 
-    - name: Copy reverse-proxy
-      copy:
-        src: ~/srdevops/vm2/reverse-proxy.conf
-        dest: /etc/nginx/sites-enabled
+    - name: Ensure server_names_hash_bucket_size is set in nginx.conf
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        regexp: '^\s*#?\s*server_names_hash_bucket_size\s+\d+;'
+        line: '        server_names_hash_bucket_size  128;'
+        insertafter: '^http {'
+        state: present
 
-    - name: Reload nginx
+    - name: Copy reverse-proxy.conf
+      copy:
+        src: /home/ditoihkams/srdevops/vm2/reverse-proxy.conf
+        dest: /etc/nginx/sites-enabled/
+
+    - name: Reload Nginx
       service:
         name: nginx
         state: reloaded
 ```
 
+![alt text](https://github.com/DitoIhkam/sr-devops/blob/main/1%3A%20Infrastructure%20as%20Code%20with%20Terraform/img/nginx%20deploy.png?raw=true)
 
-(nginx playbook image)
-
-
+![alt text](https://github.com/DitoIhkam/sr-devops/blob/main/1%3A%20Infrastructure%20as%20Code%20with%20Terraform/img/reverse%20proxy.png?raw=true)reverse proxy image)
 
 saya disini juga menyetel ip dns ip di cloudflare kearah server gateway semua seperti ini agar ketika mengakses web tidak menggunakan ip
 
-(dns image settings)
+![alt text](https://github.com/DitoIhkam/sr-devops/blob/main/1%3A%20Infrastructure%20as%20Code%20with%20Terraform/img/Screenshot%202024-08-12%20210832.png?raw=true)
 
 
 juga untuk ssh management, disini saya menggunakan ssh config agar kita tidak perlu mengingat nomor ip yang sulit/ip diganti menggunakan alias yang mudah kita ingate
@@ -314,9 +316,7 @@ host monitoring
     identityFile /home/ditoihkam/.ssh/id_rsa
 ```
 
-berikut untuk hasil dari installation seperti grafana, node exporter, prometheus
-
-(gambar web nodeexporter ,prometheus, dan grafana)
+berikut untuk contoh loginnya
 
 
-
+![alt text](https://github.com/DitoIhkam/sr-devops/blob/main/1%3A%20Infrastructure%20as%20Code%20with%20Terraform/img/login%20management.png?raw=true)
